@@ -3,10 +3,8 @@
 #include "Users.h"
 #include "HeThong.h"
 #include "menu.h"
-#include "order.h"
 LinkedList L;
 Users users;
-Order O;
 using namespace std;
 void Start()
 {
