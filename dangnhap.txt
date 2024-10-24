@@ -1,0 +1,5 @@
+4
+quocdat 4 1
+minhduc 4 0
+admin3 2 1
+admin4 2 0

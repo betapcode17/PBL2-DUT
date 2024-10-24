@@ -1,0 +1,16 @@
+15
+BOOK001|The Spare Man|Fiction| Kowal|10|1500000|2020
+BOOK002|The Ministry for the Future|Science| Robinson|190000|200|2024
+BOOK003|The City & The City|Fantasy|China Miéville|7|180000|2024
+BOOK004|Great North Road|Mystery| Hamilton|12|120000|2019
+BOOK005|Educated|Biography|Tara Westover|3|150000|2021
+BOOK006|Becoming|Biography|Michelle Obama|4|152000|2022
+BOOK007|Steve Jobs|Biography|Walter Isaacson|15|164000|2018
+BOOK008|The Glass Castle|Biography|Jeannette Walls|4|122000|2023
+BOOK009|When Breath Becomes Air|Biography|Paul Kalanithi|9|173000|2020
+BOOK010|Dune|Science Fiction|Frank Herbert|6|111000|2024
+BOOK011|Đắc Nhân Tâm|Self-Help|Dale Carnegie|11|123000|2022
+BOOK012|Số Đỏ|Drama|Vũ Trọng Phụng|6|180|2023
+BOOK013|Nhật Ký Trong Tù|Poetry|Hồ Chí Minh|9|112000|2021
+BOOK014|Truyện Kiều|Classic|Nguyễn Du|10|200|2017
+BOOK015|Cánh Đồng Bất Tận|Thriller|Nguyễn Ngọc Tư|9|75000|2020
