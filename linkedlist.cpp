@@ -2092,6 +2092,17 @@ void LinkedList::confirm(Book **bookCode, int *bookCount, int types)
             }
             else if (selectedOption == 2)
             {
+                for (int i = 0; i < types; i++)
+                {
+                    if((bookCode[i]->getSo_luong()-bookCount[i])==0){
+                        int position = find_Node(bookCode[i]->getMa_Sach());
+                        Book DeleteBook = getNodeBook(position);
+                        delete_Node(DeleteBook);// Tìm vị trí sách bằng cách tìm mã sách
+                    }else{
+                    bookCode[i]->SetSo_Luong(bookCode[i]->getSo_luong()-bookCount[i]);
+                    }
+                    
+                }
                 // Handle "Tiếp tục thanh toán"
                 break; // Exit the menu loop and continue with payment
             }
