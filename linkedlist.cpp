@@ -1928,6 +1928,11 @@ void LinkedList::Order()
         }
     }
     confirm(bookCode, bookCount, types);
+    if(bookCode[i]->getSo_luong()==0){
+                        int position = find_Node(bookCode[i]->getMa_Sach());
+                        Book DeleteBook = getNodeBook(position);
+                        delete_Node(DeleteBook);// Tìm vị trí sách bằng cách tìm mã sách
+                    }
     delete[] bookCount;
     delete[] bookCode;
     return;
@@ -2094,13 +2099,7 @@ void LinkedList::confirm(Book **bookCode, int *bookCount, int types)
             {
                 for (int i = 0; i < types; i++)
                 {
-                    if((bookCode[i]->getSo_luong()-bookCount[i])==0){
-                        int position = find_Node(bookCode[i]->getMa_Sach());
-                        Book DeleteBook = getNodeBook(position);
-                        delete_Node(DeleteBook);// Tìm vị trí sách bằng cách tìm mã sách
-                    }else{
                     bookCode[i]->SetSo_Luong(bookCode[i]->getSo_luong()-bookCount[i]);
-                    }
                     
                 }
                 // Handle "Tiếp tục thanh toán"
@@ -2199,91 +2198,86 @@ void LinkedList::bill(Book **bookCode, int *bookCount, int types)
     menuTable(x + 6, y + 13, 30, 2);
     writeString(x + 6, y + 17, L"[ Nhập số điện thoại khách hàng ]");
     menuTable(x + 6, y + 18, 30, 2);
+    
+    // Validate bill day
     bool validDate = false;
     while (!validDate)
     {
         gotoXY(x + 7, y + 4);
         getline(cin, billDay);
 
-        // Parse billDay in format "DD/MM/YYYY"
-        if (sscanf(billDay.c_str(), "%d/%d/%d", &day, &month, &year) == 3)
+        if (sscanf(billDay.c_str(), "%d/%d/%d", &day, &month, &year) == 3 && chuantime(day, month, year))
         {
-
-            if (chuantime(day, month, year))
-            {
-                validDate = true;
-            }
-            else
-            {
-                gotoXY(x + 7, y + 6);
-                // cout << "Ngày không hợp lệ, vui lòng nhập lại (DD/MM/YYYY)!\n";
-                trolaisua(x + 7, y + 4, billDay);
-            }
+            validDate = true;
         }
         else
         {
             gotoXY(x + 7, y + 6);
-            // cout << "Định dạng ngày không hợp lệ, vui lòng nhập lại (DD/MM/YYYY)!\n";
             trolaisua(x + 7, y + 4, billDay);
         }
     }
-    billDay = formatDate(billDay); // Format the date correctly to YYYY-MM-DD
+    billDay = formatDate(billDay);
+
+    // Validate customer name
     while (true)
     {
-        // writeString(37, 2, L"[ Tên sách phải dài ít nhất 4 ký tự! ]");
-
         gotoXY(x + 7, y + 9);
         getline(cin, newNameCus);
         if (isAlphaString(newNameCus))
-        {
             break;
-        }
         else
-        {
             trolaisua(x + 7, y + 9, newNameCus);
-        }
     }
 
+    // Validate customer address
     while (true)
     {
-
         gotoXY(x + 7, y + 14);
         getline(cin, newCusAddress);
-        if (isAlphaString(newNameCus))
-        {
+        if (isAlphaString(newCusAddress))
             break;
-        }
         else
-        {
-            trolaisua(x + 7, y + 14, newNameCus);
-        }
+            trolaisua(x + 7, y + 14, newCusAddress);
     }
 
+    // Validate customer phone number
     while (true)
     {
         gotoXY(x + 7, y + 19);
         getline(cin, newCusSdt);
         if (isPhoneNumber(newCusSdt))
-        {
             break;
-        }
         else
-        {
-            trolaisua(x + 7, y + 19, newNameCus);
-        }
+            trolaisua(x + 7, y + 19, newCusSdt);
     }
+
+    // Calculate the total sum of the order
     sum = this->Calculator(bookCode, bookCount, types);
+    
+    // Generate a new customer code
     CustomerNode *cus = this->customerHead;
-    do
+    while (cus != NULL)
     {
         cusCode = cus->data.getMaKH();
         cus = cus->next;
-    } while (cus != NULL);
-    int numberPart = std::stoi(cusCode.substr(2)) + 1;
-    cusCode = "KH" + std::to_string(numberPart).insert(0, 3 - std::to_string(numberPart).length(), '0');
+    }
+    
+    // Check if cusCode has a valid length before using substr
+    if (cusCode.length() > 2)
+    {
+        int numberPart = std::stoi(cusCode.substr(2)) + 1;
+        cusCode = "KH" + std::to_string(numberPart).insert(0, 3 - std::to_string(numberPart).length(), '0');
+    }
+    else
+    {
+        cusCode = "KH001";  // Default customer code if none exists
+    }
+    
+    // Create and add a new customer
     Customer newCus(cusCode, newNameCus, newCusAddress, newCusSdt, sum);
     Add_Customer(newCus);
-    
+
+    // Clear screen and display the bill
     system("cls");
     y = 3;
     writeString(x + 28, y, L"[ HÓA ĐƠN BÁN HÀNG ]");
@@ -2299,6 +2293,8 @@ void LinkedList::bill(Book **bookCode, int *bookCount, int types)
     writeString(x, y + 6, L"Số điện thoại:");
     gotoXY(x + 20, y + 6);
     cout << newCusSdt;
+    
+    // Display the order table
     Ordertable(x, y + 8, 18);
     for (int i = 0; i < types; i++)
     {
@@ -2318,10 +2314,7 @@ void LinkedList::bill(Book **bookCode, int *bookCount, int types)
     gotoXY(x + 96, y + 30);
     cout << Calculator(bookCode, bookCount, types);
 
-        std::string maHoaDon, ngayLap;
-    int soLuong, tongTien;
-
-    // Open the file in read mode to get the current record count and data
+    // Open and append to the bill file
     std::ifstream infile("bill.txt");
     if (!infile)
     {
@@ -2330,48 +2323,38 @@ void LinkedList::bill(Book **bookCode, int *bookCount, int types)
     }
 
     int n;
-    infile >> n;  // Read the number of records
+    infile >> n;
     infile.ignore();
+    infile.close();
 
-    // Read the existing records (if necessary)
-    for (int i = 1; i <= n; ++i)
-    {
-        getline(infile, maHoaDon, '|');
-        getline(infile, ngayLap, '|');
-        infile >> soLuong;
-        infile.ignore(1);
-        infile >> tongTien;
-        infile.ignore(1);
-    }
-    infile.close(); 
     n += 1;
-    numberPart = std::stoi(maHoaDon.substr(2)) + 1;
-    maHoaDon = "HD" + std::string(3 - std::to_string(numberPart).length(), '0') + std::to_string(numberPart);
-    std::ofstream outfile("bill.txt", std::ios::in); 
+    std::string maHoaDon = "HD" + std::string(3 - std::to_string(n).length(), '0') + std::to_string(n);
+
+    std::ofstream outfile("bill.txt", std::ios::app);
     if (!outfile)
     {
         std::cerr << "File could not be opened for writing!" << std::endl;
         return;
     }
 
-    outfile << n << "\n";
-    outfile.seekp(0, std::ios::end);
+    outfile << maHoaDon << "|" << billDay << "|" << sum << "\n";
     for (int i = 0; i < types; i++)
     {
-        outfile << maHoaDon << "|" << billDay << "|" << bookCount[i]
+        outfile << maHoaDon << "|" << bookCode[i]->getTen_sach() << "|" << bookCount[i]
                 << "|" << bookCode[i]->getGia_ban() * bookCount[i] << "\n";
     }
-
     outfile.close();
-    // Wait for the user to press Esc to exit
+
+    // Wait for Esc to exit
     while (true)
     {
-        if (setKeyBoard() == 5) // ASCII code for Esc
+        if (setKeyBoard() == 5)  // ASCII code for Esc
         {
             break;
         }
     }
 }
+
 long long LinkedList::Calculator(Book **bookCode, int *bookCount, int types)
 {
     long long sum = 0;
