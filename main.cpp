@@ -345,15 +345,15 @@ void Process()
 int main()
 {
 	Start();
-   // Process();
+   //Process();
     
     // BookNode* book;
-     //L.statistical();
+     L.UpdateBook();
 //    Process();
     //system("pause");
     
 	//Start();
-     L.Order();
+    //L.Order();
     // menuDisplay(2,10,2,1,1);
     //	Start();
     //L.CreateBook();

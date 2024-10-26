@@ -8,6 +8,7 @@
 #include "linkedlist.h"
 #include "Book.h"
 #include "customer.h"
+#include "condition.h"
 #include <windows.h>
 using namespace std;
 static int count = 0;
@@ -1117,8 +1118,21 @@ bool LinkedList::UpdateBook()
         if (23 <= x_click && x_click <= 52 && 17 <= y_click && y_click <= 22)
         {
             // Sửa Tên Sách
-            gotoXY(x + 30, y + 12);
-            new_TenSach = getinput();
+            while (true)
+            {
+                writeString(50, y + 6, L" Tên sách phải dài ít nhất 4 ký tự! ");
+                menuTable(49, y + 5, 40, 2);
+                gotoXY(x + 30, y + 12);
+                new_TenSach = getinput(); // Dùng getline để nhập tên sách, có thể chứa khoảng trắng
+                if (new_TenSach.length() >= 4 && isAlphaString(new_TenSach))
+                {
+                    break;
+                }
+                else
+                {
+                    trolaisua(x + 30, y + 12, new_TenSach);
+                }
+            }
             update.SetTen_sach(new_TenSach);
             gotoXY(x + 30, y + 12);
             cout << new_TenSach;
@@ -1126,8 +1140,21 @@ bool LinkedList::UpdateBook()
         else if (52 <= x_click && x_click <= 82 && 17 <= y_click && y_click <= 22)
         {
             // Sửa Thể Loại
-            gotoXY(x + 60, y + 12);
-            new_TheLoai = getinput();
+            while (true)
+            {
+                writeString(50, y + 6, L"[ Thể loại phải dài ít nhất 3 ký tự! ]");
+                menuTable(49, y + 5, 40, 2);
+                gotoXY(x + 60, y + 12);
+                new_TheLoai = getinput(); // Dùng getline để nhập thể loại
+                if (new_TheLoai.length() >= 3 && isAlphaString(new_TheLoai))
+                {
+                    break;
+                }
+                else
+                {
+                    trolaisua(x + 60, y + 4, new_TheLoai);
+                }
+            }
             update.SetThe_Loai(new_TheLoai);
             gotoXY(x + 60, y + 12);
             cout << new_TheLoai;
@@ -1135,8 +1162,21 @@ bool LinkedList::UpdateBook()
         else if (82 <= x_click && x_click <= 102 && 17 <= y_click && y_click <= 22)
         {
             // Sửa Tác Giả
-            gotoXY(x + 85, y + 12);
-            new_TacGia = getinput();
+            while (true)
+            {
+                writeString(50, y + 6, L"Tên tác giả phải dài ít nhất 4 ký tự!");
+                menuTable(49, y + 5, 40, 2);
+                gotoXY(x + 85, y + 12);
+                new_TacGia = getinput(); // Dùng getline để nhập tên tác giả
+                if (new_TacGia.length() >= 4 && isAlphaString(new_TacGia))
+                {
+                    break;
+                }
+                else
+                {
+                    trolaisua(x + 85, y + 12, new_TacGia);
+                }
+            }
             update.SetTac_Gia(new_TacGia);
             gotoXY(x + 85, y + 12);
             cout << new_TacGia;
@@ -1144,19 +1184,51 @@ bool LinkedList::UpdateBook()
         else if (102 <= x_click && x_click <= 122 && 17 <= y_click && y_click <= 22)
         {
             // Sửa Năm Xuất Bản
-            int nam_xuat_ban;
-            gotoXY(x + 104, y + 12);
-            nam_xuat_ban = stoi(getinput());
-            update.SetNXB(nam_xuat_ban);
+            string nam_xuat_ban;
+            while (true)
+            {
+
+                writeString(50, y + 6, L"  Năm xuất bản phải có 4 kí tự!      ");
+                menuTable(49, y + 5, 40, 2);
+                gotoXY(x + 104, y + 12);
+                nam_xuat_ban = getinput(); // Dùng getline để nhập năm xuất bản
+                if (isValidYear(nam_xuat_ban))
+                {
+                    break;
+                }
+                else
+                {
+                    trolaisua(x + 104, y + 4, nam_xuat_ban);
+                }
+            }
+            int year;
+            year = stoi(nam_xuat_ban);
+            update.SetNXB(year);
             gotoXY(x + 104, y + 12);
             cout << nam_xuat_ban;
         }
         else if (122 <= x_click && x_click <= 132 && 17 <= y_click && y_click <= 22)
         {
             // Sửa Số Lượng
+            string quantity;
+            while (true)
+            {
+
+                writeString(50, y + 6, L"  Số lượng phải nhỏ hơn 999!         ");
+                menuTable(49, y + 5, 40, 2);
+                gotoXY(x + 125, y + 12);
+                quantity = getinput(); // Dùng getline để nhập số lượng
+                if (isValidQuantity(quantity))
+                {
+                    break;
+                }
+                else
+                {
+                    trolaisua(x + 125, y + 12, quantity);
+                }
+            }
             int so_luong;
-            gotoXY(x + 125, y + 12);
-            so_luong = stoi(getinput());
+            so_luong = stoi(quantity);
             update.SetSo_Luong(so_luong);
             gotoXY(x + 125, y + 12);
             cout << so_luong;
@@ -1164,9 +1236,25 @@ bool LinkedList::UpdateBook()
         else if (132 <= x_click && x_click <= 152 && 17 <= y_click && y_click <= 22)
         {
             // Sửa Giá Bán
-            float gia_ban;
-            gotoXY(x + 136, y + 12);
-            gia_ban = stof(getinput());
+            string price;
+            while (true)
+            {
+
+                writeString(50, y + 6, L"  Giá sách phải lớn hơn 1000!        ");
+                menuTable(49, y + 5, 40, 2);
+                gotoXY(x + 136, y + 12);
+                price = getinput(); // Dùng getline để nhập giá sách
+                if (isValidPrice(price))
+                {
+                    break;
+                }
+                else
+                {
+                    trolaisua(x + 136, y + 12, price);
+                }
+            }
+            int gia_ban;
+            gia_ban = stoi(price);
             update.SetGia_Ban(gia_ban);
             gotoXY(x + 136, y + 12);
             cout << gia_ban;
@@ -1309,7 +1397,7 @@ bool LinkedList::Insert_NodeMiddle(Book B, int position)
 // viết thêm các hàm kiểm tra có nhập đúng hay không
 // nhấn enter để tiếp tục nhập nhấn esc để thoát
 // Function to validate input, ensuring that only alphabetic characters are allowed
-
+// các điều kiện
 bool LinkedList::isUniqueBookID(const string &bookID)
 {
     BookNode *current = this->bookHead; // Bắt đầu từ đầu danh sách sách
@@ -1323,103 +1411,7 @@ bool LinkedList::isUniqueBookID(const string &bookID)
     }
     return true;
 }
-bool isNumeric(const string &str)
-{
-    for (char const &c : str)
-    {
-        if (isdigit(c) == 0)
-            return false;
-    }
-    return true;
-}
-bool isAlphaString(const string &str)
-{
-    for (char const &c : str)
-    {
-        if (!isalpha(c) && !isspace(c))
-        { // Kiểm tra nếu không phải chữ cái hoặc khoảng trắng
-            return false;
-        }
-    }
-    return true;
-}
-void trolaisua(int x, int y, string oldInput)
-{
-    gotoXY(x, y);
-    for (int i = 0; i < oldInput.length(); i++)
-    {
-        cout << " ";
-    }
-    gotoXY(x, y);
-}
-bool isValidPrice(string price)
-{
-    // Kiểm tra xem chuỗi có phải là số hợp lệ không
-    if (price.empty() || !isNumeric(price))
-    {
-        return false; // Chuỗi rỗng hoặc không phải số
-    }
-
-    int value = stoi(price); // Chuyển chuỗi sang số nguyên
-
-    // Kiểm tra nếu giá phải lớn hơn 1000
-    if (value < 1000)
-    {
-        return false; // Giá quá nhỏ
-    }
-
-    return true; // Giá hợp lệ
-}
-// Hàm lấy năm hiện tại
-int getCurrentYear()
-{
-    time_t now = time(0);
-    tm *ltm = localtime(&now);
-    return 1900 + ltm->tm_year; // Trả về năm hiện tại
-}
-// Hàm kiểm tra chuỗi có phải là số hay không
-bool isValidYear(string year)
-{
-    // Kiểm tra xem chuỗi có phải là số hợp lệ không
-    if (year.empty() || !isNumeric(year))
-    {
-        return false; // Chuỗi rỗng hoặc không phải là số
-    }
-
-    // Kiểm tra nếu năm có đúng 4 chữ số
-    if (year.length() != 4)
-    {
-        return false; // Không đủ hoặc thừa số chữ số cho năm
-    }
-
-    int value = stoi(year); // Chuyển chuỗi sang số nguyên
-
-    // Kiểm tra nếu năm nằm trong khoảng hợp lý (ví dụ: từ 1900 đến năm hiện tại)
-    if (value < 1900 || value > getCurrentYear())
-    {
-        return false; // Năm quá nhỏ hoặc lớn hơn năm hiện tại
-    }
-
-    return true; // Năm hợp lệ
-}
-bool isValidQuantity(string quantity)
-{
-    // Kiểm tra xem chuỗi có phải là số hợp lệ không
-    if (quantity.empty() || !isNumeric(quantity))
-    {
-        return false; // Chuỗi rỗng hoặc không phải là số
-    }
-
-    int value = stoi(quantity); // Chuyển chuỗi sang số nguyên
-
-    // Kiểm tra nếu số lượng là số nguyên dương và nằm trong khoảng hợp lý
-    if (value <= 0 || value > 999)
-    {
-        return false; // Số lượng không hợp lệ (nhỏ hơn hoặc bằng 0 hoặc quá lớn)
-    }
-
-    return true;
-}
+// -------------------------------------------------------------------------------------------
 bool LinkedList::CreateBook()
 {
     ShowCursor(TRUE);
@@ -1680,7 +1672,7 @@ void LinkedList::statistical()
     int total_revenue = 0;
     int count_books = 0;
 
-    // In thống kê ban đầu
+    // Initial statistics
     BookNode *tempBook = bookHead;
     while (tempBook != nullptr)
     {
@@ -1690,16 +1682,16 @@ void LinkedList::statistical()
         tempBook = tempBook->next;
     }
 
-    // Thống kê khách hàng
+    // Customer statistics
     CustomerNode *tempCustomer = customerHead;
     while (tempCustomer != nullptr)
     {
-        num_customers++;                                    // Tổng số khách hàng
-        total_revenue += tempCustomer->data.so_tien_da_mua; // Tổng doanh thu
+        num_customers++;
+        total_revenue += tempCustomer->data.so_tien_da_mua;
         tempCustomer = tempCustomer->next;
     }
-    // Menu tùy chọn
-    int selectedOption = 0; // Bắt đầu với tùy chọn "CHI TIẾT"
+
+    int selectedOption = 0;
     char key;
     while (true)
     {
@@ -1725,16 +1717,15 @@ void LinkedList::statistical()
         writeString(x + 30, y + 18, selectedOption == 1 ? L"[ TRO VE ]" : L"  TRO VE  ");
         key = batphim();
 
-        // Move through the menu based on the arrow key input
         if (key == 8)
-        { // RIGHT key (move to the right)
+        {
             if (selectedOption < 2)
             {
                 selectedOption++;
             }
         }
         else if (key == 7)
-        { // LEFT key (move to the left)
+        {
             if (selectedOption > 0)
             {
                 selectedOption--;
@@ -1746,72 +1737,100 @@ void LinkedList::statistical()
             {
                 while (true)
                 {
-                    // Thực hiện hành động khi chọn "CHI TIẾT"
                     system("cls");
-
-                    // Nhập tháng và năm để xem thống kê chi tiết
+                    string year, month;
+                    bool found = false;
 
                     writeString(x, y, L"Nhập Năm cần thống kê");
                     menuTable(x + 25, y - 1, 20, 2);
                     gotoXY(x + 26, y);
-                    cin >> nam;
+                    getline(cin, year);
+
+                    if (!isValidYear(year))
+                    {
+                        trolaisua(x + 26, y, year);
+                        continue;
+                    }
+
                     writeString(x, y + 4, L"Nhập Tháng cần thống kê");
                     menuTable(x + 25, y + 3, 20, 2);
                     gotoXY(x + 27, y + 4);
-                    cin >> thang;
+                    getline(cin, month);
+
+                    if (!isValidMonth(month))
+                    {
+                        trolaisua(x + 27, y + 4, month);
+                        continue;
+                    }
+
                     ifstream infile("bill.txt");
                     if (!infile)
                     {
                         cout << "Khong the mo file!" << endl;
-                        return; // Hoặc thực hiện hành động khác
+                        return;
                     }
+
                     int sum_productsdetail = 0, sum_capitaldetail = 0;
-                    int n;           // Biến để lưu số lượng hóa đơn
-                    infile >> n;     // Đọc số lượng hóa đơn từ file
-                    infile.ignore(); // Bỏ qua ký tự xuống dòng
+                    int n;
+                    infile >> n;
+                    infile.ignore();
+
                     for (int i = 1; i <= n; ++i)
                     {
-                        string maHoaDon, ngayLap, soLuongStr, tongTienStr;
+                        string maHoaDon, ngayLap;
                         int soLuong, tongTien, ngay, thang_hoa_don, nam_hoa_don;
-                        // Tách các trường trong file
+
                         getline(infile, maHoaDon, '|');
                         getline(infile, ngayLap, '|');
                         infile >> soLuong;
-                        infile.ignore(1); // Bỏ qua dấu '|'
+                        infile.ignore(1);
                         infile >> tongTien;
-                        infile.ignore(1); // Bỏ qua ký tự xuống dòng hoặc '|'
+                        infile.ignore(1);
 
-                        // Lấy thông tin ngày, tháng, năm từ chuỗi ngayLap
                         sscanf(ngayLap.c_str(), "%d-%d-%d", &nam_hoa_don, &thang_hoa_don, &ngay);
 
-                        // Nếu hóa đơn thuộc tháng và năm cần thống kê
-                        if (thang_hoa_don == thang && nam_hoa_don == nam)
+                        if (thang_hoa_don == stoi(month) && nam_hoa_don == stoi(year))
                         {
-                            sum_productsdetail += soLuong; // Tổng số sách
-                            sum_capitaldetail += tongTien; // Tổng tiền bán
+                            sum_productsdetail += soLuong;
+                            sum_capitaldetail += tongTien;
+                            found = true;
                         }
                     }
                     infile.close();
-                    system("cls");
-                    menuTable(x, y - 3, 60, 2);
-                    writeString(x + 15, y - 2, L"[THỐNG KÊ CHI TIẾT TRONG THÁNG]");
-                    menuTable(x, y, 60, 15);
-                    writeString(x + 2, y + 2, L"Tổng số mặt hàng sách bán trong tháng:");
-                    gotoXY(x + 40, y + 2);
-                    cout << n;
-                    writeString(x + 2, y + 4, L"Tổng số lượng sách đã bán:");
-                    gotoXY(x + 30, y + 4);
-                    cout << sum_productsdetail;
-                    writeString(x + 2, y + 6, L"Doanh thu trong tháng:");
-                    gotoXY(x + 40, y + 6);
-                    cout << sum_capitaldetail << " VND";
-                    writeString(x + 2, y + 8, L"Số lượng khách hàng:");
-                    gotoXY(x + 30, y + 8);
-                    cout << n;
-                    gotoXY(x + 62, y + 28);
-                    if (setKeyBoard() == 5)
+
+                    if (found)
                     {
-                        break;
+                        system("cls");
+                        menuTable(x, y - 3, 60, 2);
+                        writeString(x + 15, y - 2, L"[THỐNG KÊ CHI TIẾT TRONG THÁNG]");
+                        menuTable(x, y, 60, 15);
+                        writeString(x + 2, y + 2, L"Tổng số mặt hàng sách bán trong tháng:");
+                        gotoXY(x + 40, y + 2);
+                        cout << n;
+                        writeString(x + 2, y + 4, L"Tổng số lượng sách đã bán:");
+                        gotoXY(x + 30, y + 4);
+                        cout << sum_productsdetail;
+                        writeString(x + 2, y + 6, L"Doanh thu trong tháng:");
+                        gotoXY(x + 40, y + 6);
+                        cout << sum_capitaldetail << " VND";
+                        writeString(x + 2, y + 8, L"Số lượng khách hàng:");
+                        gotoXY(x + 30, y + 8);
+                        cout << n;
+                        gotoXY(x + 62, y + 28);
+                        if (setKeyBoard() == 5)
+                        {
+                            break;
+                        }
+                    }
+                    else
+                    {
+                        system("cls");
+                        writeString(x + 1, y + 4, L"Không tồn tại năm, tháng như đã nhập");
+                        menuTable(x, y + 3, 42, 2);
+                        if (setKeyBoard() == 5)
+                        {
+                            break;
+                        }
                     }
                 }
             }
@@ -1821,12 +1840,6 @@ void LinkedList::statistical()
             }
         }
     }
-    // cout<<selectedOption;
-    // system("pause");
-    // if (selectedOption = 1)
-
-    // return;
-    //}
 }
 void LinkedList::Order()
 {
@@ -1928,11 +1941,12 @@ void LinkedList::Order()
         }
     }
     confirm(bookCode, bookCount, types);
-    if(bookCode[i]->getSo_luong()==0){
-                        int position = find_Node(bookCode[i]->getMa_Sach());
-                        Book DeleteBook = getNodeBook(position);
-                        delete_Node(DeleteBook);// Tìm vị trí sách bằng cách tìm mã sách
-                    }
+    if (bookCode[i]->getSo_luong() == 0)
+    {
+        int position = find_Node(bookCode[i]->getMa_Sach());
+        Book DeleteBook = getNodeBook(position);
+        delete_Node(DeleteBook); // Tìm vị trí sách bằng cách tìm mã sách
+    }
     delete[] bookCount;
     delete[] bookCode;
     return;
@@ -2099,8 +2113,7 @@ void LinkedList::confirm(Book **bookCode, int *bookCount, int types)
             {
                 for (int i = 0; i < types; i++)
                 {
-                    bookCode[i]->SetSo_Luong(bookCode[i]->getSo_luong()-bookCount[i]);
-                    
+                    bookCode[i]->SetSo_Luong(bookCode[i]->getSo_luong() - bookCount[i]);
                 }
                 // Handle "Tiếp tục thanh toán"
                 break; // Exit the menu loop and continue with payment
@@ -2108,74 +2121,6 @@ void LinkedList::confirm(Book **bookCode, int *bookCount, int types)
         }
     }
     bill(bookCode, bookCount, types);
-}
-
-string formatDate(string rawDate)
-{
-    // Assuming rawDate is input as DD/MM/YYYY
-    stringstream dateStream(rawDate);
-    string day, month, year;
-
-    getline(dateStream, day, '/');   // Get day
-    getline(dateStream, month, '/'); // Get month
-    getline(dateStream, year);       // Get year
-
-    // Return in YYYY-MM-DD format
-    return year + "-" + month + "-" + day;
-}
-bool isPhoneNumber(const string &str)
-{
-    // Check if the string is empty or contains invalid characters
-    if (str.empty())
-        return false;
-
-    for (char const &c : str)
-    {
-        if (!isdigit(c))
-        { // Check if the character is not a digit
-            return false;
-        }
-    }
-    return true;
-}
-int chuantime(int ngay, int thang, int nam)
-{
-    int ngaymax;
-    if (nam < 1900 || nam > 2222 || thang < 1 || thang > 12 || ngay < 1 || ngay > 31)
-    {
-        return 0;
-    }
-    else
-    {
-        switch (thang)
-        {
-        case 1:
-        case 3:
-        case 5:
-        case 7:
-        case 8:
-        case 10:
-        case 12:
-            ngaymax = 31;
-            break;
-        case 2:
-            if (nam % 4 == 0)
-                ngaymax = 29;
-            else
-                ngaymax = 28;
-            break;
-        case 4:
-        case 6:
-        case 9:
-        case 11:
-            ngaymax = 30;
-            break;
-        }
-        if (ngay <= ngaymax)
-            return 1;
-        else
-            return 0;
-    }
 }
 void LinkedList::bill(Book **bookCode, int *bookCount, int types)
 {
@@ -2198,7 +2143,7 @@ void LinkedList::bill(Book **bookCode, int *bookCount, int types)
     menuTable(x + 6, y + 13, 30, 2);
     writeString(x + 6, y + 17, L"[ Nhập số điện thoại khách hàng ]");
     menuTable(x + 6, y + 18, 30, 2);
-    
+
     // Validate bill day
     bool validDate = false;
     while (!validDate)
@@ -2253,7 +2198,7 @@ void LinkedList::bill(Book **bookCode, int *bookCount, int types)
 
     // Calculate the total sum of the order
     sum = this->Calculator(bookCode, bookCount, types);
-    
+
     // Generate a new customer code
     CustomerNode *cus = this->customerHead;
     while (cus != NULL)
@@ -2261,7 +2206,7 @@ void LinkedList::bill(Book **bookCode, int *bookCount, int types)
         cusCode = cus->data.getMaKH();
         cus = cus->next;
     }
-    
+
     // Check if cusCode has a valid length before using substr
     if (cusCode.length() > 2)
     {
@@ -2270,9 +2215,9 @@ void LinkedList::bill(Book **bookCode, int *bookCount, int types)
     }
     else
     {
-        cusCode = "KH001";  // Default customer code if none exists
+        cusCode = "KH001"; // Default customer code if none exists
     }
-    
+
     // Create and add a new customer
     Customer newCus(cusCode, newNameCus, newCusAddress, newCusSdt, sum);
     Add_Customer(newCus);
@@ -2293,7 +2238,7 @@ void LinkedList::bill(Book **bookCode, int *bookCount, int types)
     writeString(x, y + 6, L"Số điện thoại:");
     gotoXY(x + 20, y + 6);
     cout << newCusSdt;
-    
+
     // Display the order table
     Ordertable(x, y + 8, 18);
     for (int i = 0; i < types; i++)
@@ -2348,7 +2293,7 @@ void LinkedList::bill(Book **bookCode, int *bookCount, int types)
     // Wait for Esc to exit
     while (true)
     {
-        if (setKeyBoard() == 5)  // ASCII code for Esc
+        if (setKeyBoard() == 5) // ASCII code for Esc
         {
             break;
         }

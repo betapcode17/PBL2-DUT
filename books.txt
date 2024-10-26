@@ -1,6 +1,6 @@
 15
 BOOK001|The Spare Man|Fiction| Kowal|10|1500000|2020
-BOOK002|The Ministry for the Future|Science| Robinson|190000|200|2024
+BOOK002|The Ministry for the Future|Science| Robinson|4|19900000|2024
 BOOK003|The City & The City|Fantasy|China Miéville|7|180000|2024
 BOOK004|Great North Road|Mystery| Hamilton|12|120000|2019
 BOOK005|Educated|Biography|Tara Westover|3|150000|2021
