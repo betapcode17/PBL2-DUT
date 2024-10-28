@@ -1491,7 +1491,7 @@ bool LinkedList::CreateBook()
 
         while (true)
         {
-            writeString(37, 2, L"  Năm xuất bản phải có 4 kí tự! ");
+            writeString(37, 2, L"  Năm xuất bản phải có 4 kí tự!      ");
             gotoXY(x + 104, y + 4);
             getline(cin, publicationYear); // Dùng getline để nhập năm xuất bản
             if (isValidYear(publicationYear))
@@ -1506,7 +1506,7 @@ bool LinkedList::CreateBook()
 
         while (true)
         {
-            writeString(37, 2, L"  Số lượng phải nhỏ hơn 999!  ");
+            writeString(37, 2, L"  Số lượng phải nhỏ hơn 999!         ");
             gotoXY(x + 125, y + 4);
             getline(cin, quantity); // Dùng getline để nhập số lượng
             if (isValidQuantity(quantity))
@@ -1521,7 +1521,7 @@ bool LinkedList::CreateBook()
 
         while (true)
         {
-            writeString(37, 2, L"  Giá sách phải lớn hơn 1000!  ");
+            writeString(37, 2, L"  Giá sách phải lớn hơn 1000!         ");
             gotoXY(x + 136, y + 4);
             getline(cin, price); // Dùng getline để nhập giá sách
             if (isValidPrice(price))
@@ -2198,30 +2198,48 @@ void LinkedList::bill(Book **bookCode, int *bookCount, int types)
 
     // Calculate the total sum of the order
     sum = this->Calculator(bookCode, bookCount, types);
-
     // Generate a new customer code
     CustomerNode *cus = this->customerHead;
+    bool customerExists = false;
+
+    // Check if customer already exists
     while (cus != NULL)
     {
-        cusCode = cus->data.getMaKH();
+        if (cus->data.getSdtKH() == newCusSdt && cus->data.getDia_chi() == newCusAddress && cus->data.getSdtKH() == newCusSdt)
+        {
+            // Customer exists, add sum to existing customer's amount
+            cus->data.setSTDM(cus->data.getSo_tien_da_mua() + sum);
+            customerExists = true;
+            break;
+        }
         cus = cus->next;
     }
 
-    // Check if cusCode has a valid length before using substr
-    if (cusCode.length() > 2)
+    if (!customerExists)
     {
-        int numberPart = std::stoi(cusCode.substr(2)) + 1;
-        cusCode = "KH" + std::to_string(numberPart).insert(0, 3 - std::to_string(numberPart).length(), '0');
-    }
-    else
-    {
-        cusCode = "KH001"; // Default customer code if none exists
-    }
+        // Generate a new customer code
+        cus = this->customerHead;
+        std::string cusCode;
+        while (cus != NULL)
+        {
+            cusCode = cus->data.getMaKH();
+            cus = cus->next;
+        }
 
-    // Create and add a new customer
-    Customer newCus(cusCode, newNameCus, newCusAddress, newCusSdt, sum);
-    Add_Customer(newCus);
+        if (cusCode.length() > 2)
+        {
+            int numberPart = std::stoi(cusCode.substr(2)) + 1;
+            cusCode = "KH" + std::to_string(numberPart).insert(0, 3 - std::to_string(numberPart).length(), '0');
+        }
+        else
+        {
+            cusCode = "KH001"; // Default customer code if none exists
+        }
 
+        // Create and add a new customer
+        Customer newCus(cusCode, newNameCus, newCusAddress, newCusSdt, sum);
+        Add_Customer(newCus);
+    }
     // Clear screen and display the bill
     system("cls");
     y = 3;
@@ -2260,6 +2278,10 @@ void LinkedList::bill(Book **bookCode, int *bookCount, int types)
     cout << Calculator(bookCode, bookCount, types);
 
     // Open and append to the bill file
+    std::string maHoaDon, ngayLap;
+    int soLuong, tongTien;
+
+    // Open the file in read mode to get the current record count and data
     std::ifstream infile("bill.txt");
     if (!infile)
     {
@@ -2268,28 +2290,39 @@ void LinkedList::bill(Book **bookCode, int *bookCount, int types)
     }
 
     int n;
-    infile >> n;
+    infile >> n; // Read the number of records
     infile.ignore();
+
+    // Read the existing records (if necessary)
+    for (int i = 1; i <= n; ++i)
+    {
+        getline(infile, maHoaDon, '|');
+        getline(infile, ngayLap, '|');
+        infile >> soLuong;
+        infile.ignore(1);
+        infile >> tongTien;
+        infile.ignore(1);
+    }
     infile.close();
-
     n += 1;
-    std::string maHoaDon = "HD" + std::string(3 - std::to_string(n).length(), '0') + std::to_string(n);
-
-    std::ofstream outfile("bill.txt", std::ios::app);
+    int numberPart = std::stoi(maHoaDon.substr(2)) + 1;
+    maHoaDon = "HD" + std::string(3 - std::to_string(numberPart).length(), '0') + std::to_string(numberPart);
+    std::ofstream outfile("bill.txt", std::ios::in);
     if (!outfile)
     {
         std::cerr << "File could not be opened for writing!" << std::endl;
         return;
     }
-
-    outfile << maHoaDon << "|" << billDay << "|" << sum << "\n";
+    outfile << n << "\n";
+    outfile.seekp(0, std::ios::end);
     for (int i = 0; i < types; i++)
     {
-        outfile << maHoaDon << "|" << bookCode[i]->getTen_sach() << "|" << bookCount[i]
+        outfile << "\n"
+                << maHoaDon << "|" << billDay << "|" << bookCount[i]
                 << "|" << bookCode[i]->getGia_ban() * bookCount[i] << "\n";
     }
-    outfile.close();
 
+    outfile.close();
     // Wait for Esc to exit
     while (true)
     {
