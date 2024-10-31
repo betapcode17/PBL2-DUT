@@ -1671,7 +1671,6 @@ void LinkedList::statistical()
     int num_customers = 0;
     int total_revenue = 0;
     int count_books = 0;
-
     // Initial statistics
     BookNode *tempBook = bookHead;
     while (tempBook != nullptr)
@@ -1770,29 +1769,29 @@ void LinkedList::statistical()
                         return;
                     }
 
-                    int sum_productsdetail = 0, sum_capitaldetail = 0;
+                    int sum_productsdetail = 0, sum_capitaldetail = 0, sum_cusDetail = 0, sum_BookDetail = 0;
                     int n;
                     infile >> n;
                     infile.ignore();
 
                     for (int i = 1; i <= n; ++i)
                     {
-                        string maHoaDon, ngayLap;
+                        string maHoaDon, ngayLap, makhachhang;
                         int soLuong, tongTien, ngay, thang_hoa_don, nam_hoa_don;
-
                         getline(infile, maHoaDon, '|');
+                        getline(infile, makhachhang, '|');
                         getline(infile, ngayLap, '|');
                         infile >> soLuong;
                         infile.ignore(1);
                         infile >> tongTien;
                         infile.ignore(1);
-
                         sscanf(ngayLap.c_str(), "%d-%d-%d", &nam_hoa_don, &thang_hoa_don, &ngay);
-
                         if (thang_hoa_don == stoi(month) && nam_hoa_don == stoi(year))
                         {
                             sum_productsdetail += soLuong;
                             sum_capitaldetail += tongTien;
+                            sum_cusDetail++;
+                            sum_BookDetail++;
                             found = true;
                         }
                     }
@@ -1806,7 +1805,7 @@ void LinkedList::statistical()
                         menuTable(x, y, 60, 15);
                         writeString(x + 2, y + 2, L"Tổng số mặt hàng sách bán trong tháng:");
                         gotoXY(x + 40, y + 2);
-                        cout << n;
+                        cout << sum_BookDetail;
                         writeString(x + 2, y + 4, L"Tổng số lượng sách đã bán:");
                         gotoXY(x + 30, y + 4);
                         cout << sum_productsdetail;
@@ -1815,7 +1814,7 @@ void LinkedList::statistical()
                         cout << sum_capitaldetail << " VND";
                         writeString(x + 2, y + 8, L"Số lượng khách hàng:");
                         gotoXY(x + 30, y + 8);
-                        cout << n;
+                        cout << sum_cusDetail;
                         gotoXY(x + 62, y + 28);
                         if (setKeyBoard() == 5)
                         {
@@ -1853,93 +1852,7 @@ void LinkedList::Order()
     int types = 0;
     Book **bookCode = new Book *[1000];
     int *bookCount = new int[1000];
-    writeString(x, y, L"[Nhập mã sách cần bán]");
-    menuTable(x + 23, y - 1, 25, 2);
-    writeString(x + 70, y, L"[Nhập số lượng:]");
-    menuTable(x + 90, y - 1, 25, 2);
-    writeString(x + 1, y + 4, L"[ THÔNG TIN SẢN PHẨM ]");
-    gotoXY(x + 5, y + 1);
-    menuDisplay(x + 1, y + 6, 20, 1, 1);
-    while (true)
-    {
-        // Xóa nội dung cũ tại vị trí nhập mã sách và số lượng
-        gotoXY(x + 24, y);
-        cout << string(10, ' '); // Xóa nội dung trong ô nhập mã sách
-        gotoXY(x + 102, y);
-        cout << string(10, ' '); // Xóa nội dung trong ô nhập số lượng
-
-        // Nhập mã sách
-        while (true)
-        {
-            gotoXY(x + 24, y);
-            cin >> masach;
-            position = find_Node(masach); // Sử dụng con trỏ để gọi hàm
-            if (position != -1)
-            {
-                break;
-            }
-            else
-            {
-                writeString(30, 22, L"Không tồn tại mã sách như trên.");
-            }
-        }
-
-        foundBook = getNode(position); // Lấy con trỏ đến đối tượng sách
-
-        // Nhập số lượng
-        while (true)
-        {
-            gotoXY(x + 102, y);
-            cin >> soluong;
-            gotoXY(x + 90, y + 2);
-            cout << string(100, ' ');
-
-            // Kiểm tra số lượng hợp lệ
-            if (cin.fail() || soluong <= 0)
-            {
-                cin.clear();
-                cin.ignore(numeric_limits<streamsize>::max(), '\n');
-                writeString(30, 22, L"Số lượng không hợp lệ. Vui lòng nhập lại.");
-            }
-            else if (soluong > foundBook->getSo_luong())
-            {
-                writeString(x + 90, y + 2, L"[ Số lượng vượt quá số lượng hiện có. Vui lòng nhập lại]");
-            }
-            else
-            {
-                break;
-            }
-        }
-        bookCode[i] = foundBook;
-        bookCount[i] = soluong;
-        types++;
-        // Hiển thị thông tin sách đã chọn
-        gotoXY(x + 10, a + 9);
-        cout << bookCode[i]->getMa_Sach();
-        gotoXY(x + 30, a + 9);
-        cout << bookCode[i]->getTen_sach();
-        gotoXY(x + 60, a + 9);
-        cout << bookCode[i]->getThe_loai();
-        gotoXY(x + 85, a + 9);
-        cout << bookCode[i]->getTac_gia();
-        gotoXY(x + 104, a + 9);
-        cout << bookCode[i]->getNam_xuat_ban();
-        gotoXY(x + 125, a + 9);
-        cout << bookCount[i];
-        gotoXY(x + 136, a + 9);
-        cout << bookCode[i]->getGia_ban();
-        // Xác nhận có chọn thêm sản phẩm không
-        int response = MessageBoxW(NULL, L"Bạn có muốn chọn thêm sản phẩm không?", L"Xác nhận", MB_OKCANCEL | MB_ICONQUESTION);
-        if (response == IDOK)
-        {
-            i++; // Điều chỉnh vị trí cho lần nhập tiếp theo
-            a += 2;
-        }
-        else
-        {
-            break;
-        }
-    }
+    Add_Product(&bookCode, &bookCount, types);
     confirm(bookCode, bookCount, types);
     if (bookCode[i]->getSo_luong() == 0)
     {
@@ -1951,7 +1864,109 @@ void LinkedList::Order()
     delete[] bookCode;
     return;
 }
+void LinkedList::Add_Product(Book ***bookCode, int **bookCount, int &types)
+{
+    system("cls");
+    int x = 2, y = 2, a = 2;
+    int soluong;
+    string masach;
+    Book *foundBook;
+    int position;
 
+    writeString(x, y, L"[Nhập mã sách cần bán]");
+    menuTable(x + 23, y - 1, 25, 2);
+    writeString(x + 70, y, L"[Nhập số lượng:]");
+    menuTable(x + 90, y - 1, 25, 2);
+    writeString(x + 1, y + 4, L"[ THÔNG TIN SẢN PHẨM ]");
+    menuDisplay(x + 1, y + 6, 20, 1, 1);
+
+    while (true)
+    {
+        // Xóa nội dung cũ tại vị trí nhập mã sách và số lượng
+        gotoXY(x + 24, y);
+        cout << string(20, ' '); // Xóa nội dung trong ô nhập mã sách
+        gotoXY(x + 102, y);
+        cout << string(10, ' '); // Xóa nội dung trong ô nhập số lượng
+
+        // Nhập mã sách
+        while (true)
+        {
+            gotoXY(x + 24, y);
+            cout << string(20, ' ');
+            gotoXY(x + 24, y);
+            cin >> masach;
+
+            position = find_Node(masach);
+            if (position != -1)
+            {
+                break;
+            }
+            else
+            {
+                writeString(x + 23, y + 2, L"[Không tồn tại mã sách như trên]");
+            }
+        }
+
+        foundBook = getNode(position); // Lấy con trỏ đến đối tượng sách
+
+        // Nhập số lượng
+        while (true)
+        {
+            gotoXY(x + 102, y);
+            cout << string(10, ' ');
+            gotoXY(x + 102, y);
+            cin >> soluong;
+
+            // Kiểm tra số lượng hợp lệ
+            if (cin.fail() || soluong <= 0)
+            {
+                cin.clear();
+                cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                writeString(x + 70, y + 2, L"[Số lượng không hợp lệ. Vui lòng nhập lại]");
+            }
+            else if (soluong > foundBook->getSo_luong())
+            {
+                writeString(x + 70, y + 2, L"[ Số lượng vượt quá số lượng hiện có. Vui lòng nhập lại]");
+            }
+            else
+            {
+                break;
+            }
+        }
+
+        // Thêm sản phẩm vào mảng
+        (*bookCode)[types] = foundBook;
+        (*bookCount)[types] = soluong;
+        types++;
+
+        // Hiển thị thông tin sách đã chọn
+        gotoXY(x + 10, a + 9);
+        cout << (*bookCode)[types - 1]->getMa_Sach();
+        gotoXY(x + 30, a + 9);
+        cout << (*bookCode)[types - 1]->getTen_sach();
+        gotoXY(x + 60, a + 9);
+        cout << (*bookCode)[types - 1]->getThe_loai();
+        gotoXY(x + 85, a + 9);
+        cout << (*bookCode)[types - 1]->getTac_gia();
+        gotoXY(x + 104, a + 9);
+        cout << (*bookCode)[types - 1]->getNam_xuat_ban();
+        gotoXY(x + 125, a + 9);
+        cout << (*bookCount)[types - 1];
+        gotoXY(x + 136, a + 9);
+        cout << (*bookCode)[types - 1]->getGia_ban();
+
+        // Xác nhận có chọn thêm sản phẩm không
+        int response = MessageBoxW(NULL, L"Bạn có muốn chọn thêm sản phẩm không?", L"Xác nhận", MB_OKCANCEL | MB_ICONQUESTION);
+        if (response == IDOK)
+        {
+            a += 2; // Điều chỉnh vị trí cho lần nhập tiếp theo
+        }
+        else
+        {
+            break;
+        }
+    }
+}
 void LinkedList::confirm(Book **bookCode, int *bookCount, int types)
 {
     string billDay, cusCode, newNameCus, newCusAddress, newCusSdt;
@@ -1965,7 +1980,7 @@ void LinkedList::confirm(Book **bookCode, int *bookCount, int types)
     writeString(x, y, L"[ DANH SÁCH SẢN PHẨM ĐÃ CHỌN ]");
     Ordertable(x, y + 4, 20);
     // Menu items positions
-    int menuX = x + 10, menuY = y + 30;
+    int menuX = x, menuY = y + 30;
     while (true)
     {
         // Clear the screen and redraw menu
@@ -1987,35 +2002,35 @@ void LinkedList::confirm(Book **bookCode, int *bookCount, int types)
             cout << bookCode[i]->getGia_ban() * bookCount[i];
             a = a + 2;
         }
-        // Display the menu options with highlighting
-        menuTable(menuX, menuY, 80, 2);
+        menuTable(menuX, menuY, 110, 2); // Tăng chiều rộng menu cho phù hợp với 4 mục
         writeString(menuX + 5, menuY + 1, selectedOption == 0 ? L"[ Xóa sản phẩm ]" : L"  Xóa sản phẩm");
         writeString(menuX + 30, menuY + 1, selectedOption == 1 ? L"[ Sửa sản phẩm ]" : L"  Sửa sản phẩm");
-        writeString(menuX + 55, menuY + 1, selectedOption == 2 ? L"[ Tiếp tục thanh toán ]" : L"  Tiếp tục thanh toán");
-
-        // Wait for key input from setKeyBoard function
+        writeString(menuX + 55, menuY + 1, selectedOption == 2 ? L"[ Thêm sản phẩm ]" : L"  Thêm sản phẩm");
+        writeString(menuX + 80, menuY + 1, selectedOption == 3 ? L"[ Tiếp tục thanh toán ]" : L"  Tiếp tục thanh toán");
+        // Chờ nhận phím từ hàm batphim
         keyInput = batphim();
-
-        // Move through the menu based on the arrow key input
-        if (keyInput == 8)
-        { // RIGHT key (move to the right)
-            if (selectedOption < 2)
+        // Di chuyển trong menu dựa trên phím mũi tên
+        if (keyInput == 8) // RIGHT key (sang phải)
+        {
+            if (selectedOption < 3) // Bây giờ có 4 lựa chọn (0-3)
             {
                 selectedOption++;
             }
         }
-        else if (keyInput == 7)
-        { // LEFT key (move to the left)
+        else if (keyInput == 7) // LEFT key (sang trái)
+        {
             if (selectedOption > 0)
             {
                 selectedOption--;
             }
         }
-        else if (keyInput == 3)
+        else if (keyInput == 3) // Khi nhấn phím Enter
         {
-            system("cls"); // Clear screen when an option is selected
+            system("cls"); // Xóa màn hình khi chọn một mục
             if (selectedOption == 0)
             {
+                // Xử lý "Xóa sản phẩm"
+                writeString(x, y, L"[ Chọn sản phẩm cần xóa ]");
                 writeString(x, y, L"[ Chọn sản phẩm cần xóa ]");
                 menuTable(x + 25, y - 1, 20, 2);
                 Ordertable(x, y + 4, 20);
@@ -2067,7 +2082,7 @@ void LinkedList::confirm(Book **bookCode, int *bookCount, int types)
             }
             else if (selectedOption == 1)
             {
-                // Handle "Sửa sản phẩm"
+                // Xử lý "Sửa sản phẩm"
                 writeString(x, y, L"[ Chọn sản phẩm cần sửa ]");
                 menuTable(x + 25, y - 1, 15, 2);
                 Ordertable(x, y + 4, 20);
@@ -2111,12 +2126,17 @@ void LinkedList::confirm(Book **bookCode, int *bookCount, int types)
             }
             else if (selectedOption == 2)
             {
+                // Xử lý "Thêm sản phẩm"
+                Add_Product(&bookCode, &bookCount, types);
+            }
+            else if (selectedOption == 3)
+            {
+                // Xử lý "Tiếp tục thanh toán"
                 for (int i = 0; i < types; i++)
                 {
                     bookCode[i]->SetSo_Luong(bookCode[i]->getSo_luong() - bookCount[i]);
                 }
-                // Handle "Tiếp tục thanh toán"
-                break; // Exit the menu loop and continue with payment
+                break; // Thoát khỏi vòng lặp menu để tiếp tục thanh toán
             }
         }
     }
@@ -2126,7 +2146,7 @@ void LinkedList::bill(Book **bookCode, int *bookCount, int types)
 {
     int x = 20, y = 5;
     int a = 5;
-    string billDay, cusCode, newNameCus, newCusAddress, newCusSdt;
+    string billDay, cusCode, newNameCus, newCusAddress, newCusSdt, newCusCode;
     int day, month, year;
     int sum = 0;
     cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
@@ -2239,8 +2259,35 @@ void LinkedList::bill(Book **bookCode, int *bookCount, int types)
         // Create and add a new customer
         Customer newCus(cusCode, newNameCus, newCusAddress, newCusSdt, sum);
         Add_Customer(newCus);
+        newCusCode = cusCode;
+        std::ifstream infile("customers.txt");
+        if (!infile)
+        {
+            std::cerr << "File could not be opened!" << std::endl;
+            return;
+        }
+
+        int n;
+        infile >> n;
+        infile.ignore();
+        n += 1;
+        std::ofstream outfile("customers.txt", std::ios::in);
+        if (!outfile)
+        {
+            std::cerr << "File could not be opened for writing!" << std::endl;
+            return;
+        }
+        outfile << n << "\n";
+        outfile.seekp(0, std::ios::end);
+        for (int i = 0; i < types; i++)
+        {
+            outfile << "\n"
+                    << cusCode << "|" << newNameCus << "|" << newCusAddress << "|" << newCusSdt
+                    << "|" << sum;
+        }
+        outfile.close();
+        // Read the number of records
     }
-    // Clear screen and display the bill
     system("cls");
     y = 3;
     writeString(x + 28, y, L"[ HÓA ĐƠN BÁN HÀNG ]");
@@ -2276,12 +2323,8 @@ void LinkedList::bill(Book **bookCode, int *bookCount, int types)
     writeString(x + 80, y + 30, L"[ TỔNG TIỀN ]");
     gotoXY(x + 96, y + 30);
     cout << Calculator(bookCode, bookCount, types);
-
-    // Open and append to the bill file
-    std::string maHoaDon, ngayLap;
+    std::string maHoaDon, ngayLap, makhachhang;
     int soLuong, tongTien;
-
-    // Open the file in read mode to get the current record count and data
     std::ifstream infile("bill.txt");
     if (!infile)
     {
@@ -2292,11 +2335,11 @@ void LinkedList::bill(Book **bookCode, int *bookCount, int types)
     int n;
     infile >> n; // Read the number of records
     infile.ignore();
-
     // Read the existing records (if necessary)
     for (int i = 1; i <= n; ++i)
     {
         getline(infile, maHoaDon, '|');
+        getline(infile, makhachhang, '|');
         getline(infile, ngayLap, '|');
         infile >> soLuong;
         infile.ignore(1);
@@ -2318,10 +2361,9 @@ void LinkedList::bill(Book **bookCode, int *bookCount, int types)
     for (int i = 0; i < types; i++)
     {
         outfile << "\n"
-                << maHoaDon << "|" << billDay << "|" << bookCount[i]
-                << "|" << bookCode[i]->getGia_ban() * bookCount[i] << "\n";
+                << maHoaDon << "|" << newCusCode << "|" << billDay << "|" << bookCount[i]
+                << "|" << bookCode[i]->getGia_ban() * bookCount[i];
     }
-
     outfile.close();
     // Wait for Esc to exit
     while (true)
