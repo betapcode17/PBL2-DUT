@@ -1662,6 +1662,58 @@ int LinkedList::find_NodeCustomer(const string &CusCode)
 
     return -1;
 }
+void outputInvoice(int x, int y, string maHoaDon, string makhachhang, string ngayLap, int soLuong, int tongTien)
+{
+    gotoXY(x + 5, y + 1); // Position for Mã HĐ
+    cout << maHoaDon;
+    gotoXY(x + 25, y + 1); // Position for Mã KH
+    cout << makhachhang;
+    gotoXY(x + 45, y + 1); // Position for Ngày lập hóa đơn
+    cout << ngayLap;
+    gotoXY(x + 70, y + 1); // Position for Số lượng
+    cout << soLuong;
+    gotoXY(x + 90, y + 1); // Position for Tổng tiền
+    cout << tongTien;
+}
+void displayInvoice(int n, string maHoaDonArr[], string makhachhangArr[], string ngayLapArr[], int soLuongArr[], int tongTienArr[])
+{
+    int page = 1;
+    int totalPages = (n + 4) / 5; // Tổng số trang, mỗi trang 10 hóa đơn
+    int tam = 0;
+    while (tam == 0)
+    {
+        system("cls");
+        const wchar_t *title = L"[ THÔNG TIN HÓA ĐƠN ]";
+        writeString(2, 2, title);
+        Bill_Table(2, 4, 23, page, totalPages);
+        // In hóa đơn trên trang hiện tại
+        int start = (page - 1) * 10;
+        int end = min(start + 10, n);
+
+        int y = 6;
+        for (int i = start; i < end; ++i)
+        {
+            outputInvoice(2, y, maHoaDonArr[i], makhachhangArr[i], ngayLapArr[i], soLuongArr[i], tongTienArr[i]);
+            y += 2;
+        }
+
+        int key = setKeyBoard();
+        if (key == 4 && page < totalPages)
+        { // Ấn qua phải để sang trang tiếp theo
+            page++;
+        }
+        else if (key == 3 && page > 1)
+        { // Ấn qua trái để quay lại trang trước
+            page--;
+        }
+        else if (key == 5)
+        { // Ấn thoát
+            system("cls");
+            tam = 1;
+            break;
+        }
+    }
+}
 void LinkedList::statistical()
 {
     int x = 30, y = 5;
@@ -1671,6 +1723,7 @@ void LinkedList::statistical()
     int num_customers = 0;
     int total_revenue = 0;
     int count_books = 0;
+
     // Initial statistics
     BookNode *tempBook = bookHead;
     while (tempBook != nullptr)
@@ -1734,7 +1787,8 @@ void LinkedList::statistical()
         {
             if (selectedOption == 0)
             {
-                while (true)
+                bool detailMenu = true;
+                while (detailMenu)
                 {
                     system("cls");
                     string year, month;
@@ -1772,8 +1826,13 @@ void LinkedList::statistical()
                     int sum_productsdetail = 0, sum_capitaldetail = 0, sum_cusDetail = 0, sum_BookDetail = 0;
                     int n;
                     infile >> n;
+                    int count = 0; // Biến đếm số lượng hóa đơn hợp lệ
                     infile.ignore();
-
+                    string maHoaDonArr[1000]; // Giả sử số hóa đơn không quá 1000
+                    string makhachhangArr[1000];
+                    string ngayLapArr[1000];
+                    int soLuongArr[1000];
+                    int tongTienArr[1000];
                     for (int i = 1; i <= n; ++i)
                     {
                         string maHoaDon, ngayLap, makhachhang;
@@ -1788,37 +1847,73 @@ void LinkedList::statistical()
                         sscanf(ngayLap.c_str(), "%d-%d-%d", &nam_hoa_don, &thang_hoa_don, &ngay);
                         if (thang_hoa_don == stoi(month) && nam_hoa_don == stoi(year))
                         {
+                            maHoaDonArr[count] = maHoaDon;
+                            makhachhangArr[count] = makhachhang;
+                            ngayLapArr[count] = ngayLap;
+                            soLuongArr[count] = soLuong;
+                            tongTienArr[count] = tongTien;
+
                             sum_productsdetail += soLuong;
                             sum_capitaldetail += tongTien;
                             sum_cusDetail++;
                             sum_BookDetail++;
                             found = true;
+                            count++; // Tăng biến đếm
                         }
                     }
                     infile.close();
 
                     if (found)
                     {
-                        system("cls");
-                        menuTable(x, y - 3, 60, 2);
-                        writeString(x + 15, y - 2, L"[THỐNG KÊ CHI TIẾT TRONG THÁNG]");
-                        menuTable(x, y, 60, 15);
-                        writeString(x + 2, y + 2, L"Tổng số mặt hàng sách bán trong tháng:");
-                        gotoXY(x + 40, y + 2);
-                        cout << sum_BookDetail;
-                        writeString(x + 2, y + 4, L"Tổng số lượng sách đã bán:");
-                        gotoXY(x + 30, y + 4);
-                        cout << sum_productsdetail;
-                        writeString(x + 2, y + 6, L"Doanh thu trong tháng:");
-                        gotoXY(x + 40, y + 6);
-                        cout << sum_capitaldetail << " VND";
-                        writeString(x + 2, y + 8, L"Số lượng khách hàng:");
-                        gotoXY(x + 30, y + 8);
-                        cout << sum_cusDetail;
-                        gotoXY(x + 62, y + 28);
-                        if (setKeyBoard() == 5)
+                        int Sub_selectedOption = 0;
+                        while (true)
                         {
-                            break;
+                            system("cls");
+                            menuTable(x, y - 3, 60, 2);
+                            writeString(x + 15, y - 2, L"[THỐNG KÊ CHI TIẾT TRONG THÁNG]");
+                            menuTable(x, y, 60, 15);
+                            writeString(x + 2, y + 2, L"Tổng số mặt hàng sách bán trong tháng:");
+                            gotoXY(x + 40, y + 2);
+                            cout << sum_BookDetail;
+                            writeString(x + 2, y + 4, L"Tổng số lượng sách đã bán:");
+                            gotoXY(x + 30, y + 4);
+                            cout << sum_productsdetail;
+                            writeString(x + 2, y + 6, L"Doanh thu trong tháng:");
+                            gotoXY(x + 40, y + 6);
+                            cout << sum_capitaldetail << " VND";
+                            writeString(x + 2, y + 8, L"Số lượng khách hàng:");
+                            gotoXY(x + 30, y + 8);
+                            cout << sum_cusDetail;
+                            writeString(x + 2, y + 18, Sub_selectedOption == 0 ? L"[ CHI TIẾT ]" : L"  CHI TIẾT  ");
+                            writeString(x + 30, y + 18, Sub_selectedOption == 1 ? L"[ TRO VE ]" : L"  TRO VE  ");
+
+                            int Sub_key = batphim();
+                            if (Sub_key == 8) // Right arrow
+                            {
+                                if (Sub_selectedOption < 1)
+                                {
+                                    Sub_selectedOption++;
+                                }
+                            }
+                            else if (Sub_key == 7) // Left arrow
+                            {
+                                if (Sub_selectedOption > 0)
+                                {
+                                    Sub_selectedOption--;
+                                }
+                            }
+                            else if (Sub_key == 3) // Enter key
+                            {
+                                if (Sub_selectedOption == 0)
+                                {
+                                    displayInvoice(count, maHoaDonArr, makhachhangArr, ngayLapArr, soLuongArr, tongTienArr);
+                                }
+                                else if (Sub_selectedOption == 1)
+                                {
+                                    detailMenu = false; // Exit to main statistics view
+                                    break;
+                                }
+                            }
                         }
                     }
                     else
@@ -1840,6 +1935,7 @@ void LinkedList::statistical()
         }
     }
 }
+
 void LinkedList::Order()
 {
     int i = 0;
